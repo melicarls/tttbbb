@@ -14,9 +14,13 @@ func homepageHandler(w http.ResponseWriter, r *http.Request) {
   templates.ExecuteTemplate(w, "homepage.html", nil)
 }
 
-func main() {
-  router := mux.NewRouter()
-  router.HandleFunc("/", homepageHandler)
+func newRouter() *mux.Router {
+  r := mux.NewRouter()
+  r.HandleFunc("/", homepageHandler).Methods("GET")
+  return r
+}
 
+func main() {
+  router := newRouter()
   log.Fatal(http.ListenAndServe(":8080", router))
 }
