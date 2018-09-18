@@ -8,15 +8,22 @@ import (
   "github.com/gorilla/mux"
 )
 
-var templates = template.Must(template.ParseFiles("views/homepage.html"))
-
 func homepageHandler(w http.ResponseWriter, r *http.Request) {
-  templates.ExecuteTemplate(w, "homepage.html", nil)
+  templates := template.Must(template.ParseFiles("views/layout.html", "views/birdview.html"))
+  templates.ExecuteTemplate(w, "layout", nil)
 }
 
 func newRouter() *mux.Router {
   r := mux.NewRouter()
   r.HandleFunc("/", homepageHandler).Methods("GET")
+  r.HandleFunc("/birds", getBirdHandler).Methods("GET")
+  r.HandleFunc("/birds", createBirdHandler).Methods("POST")
+
+  staticFileDirectory := http.Dir("./assets/")
+  staticFileHandler := http.StripPrefix("/assets/", http.FileServer(staticFileDirectory))
+
+  r.PathPrefix("/assets/").Handler(staticFileHandler).Methods("GET")
+
   return r
 }
 
